@@ -51,19 +51,17 @@ const EGBudgetApp = () => {
 
   const loadData = async () => {
     try {
-      const [membersResult, categoriesResult, transactionsResult, debtsResult, incomesResult] = await Promise.all([
-        window.storage.get('eg-budget-members').catch(() => null),
-        window.storage.get('eg-budget-categories').catch(() => null),
-        window.storage.get('eg-budget-transactions').catch(() => null),
-        window.storage.get('eg-budget-debts').catch(() => null),
-        window.storage.get('eg-budget-incomes').catch(() => null)
-      ]);
+      const membersData = localStorage.getItem('eg-budget-members');
+      const categoriesData = localStorage.getItem('eg-budget-categories');
+      const transactionsData = localStorage.getItem('eg-budget-transactions');
+      const debtsData = localStorage.getItem('eg-budget-debts');
+      const incomesData = localStorage.getItem('eg-budget-incomes');
 
-      if (membersResult?.value) setMembers(JSON.parse(membersResult.value));
-      if (categoriesResult?.value) setCategories(JSON.parse(categoriesResult.value));
-      if (transactionsResult?.value) setTransactions(JSON.parse(transactionsResult.value));
-      if (debtsResult?.value) setDebts(JSON.parse(debtsResult.value));
-      if (incomesResult?.value) setMonthlyIncomes(JSON.parse(incomesResult.value));
+      if (membersData) setMembers(JSON.parse(membersData));
+      if (categoriesData) setCategories(JSON.parse(categoriesData));
+      if (transactionsData) setTransactions(JSON.parse(transactionsData));
+      if (debtsData) setDebts(JSON.parse(debtsData));
+      if (incomesData) setMonthlyIncomes(JSON.parse(incomesData));
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -73,13 +71,11 @@ const EGBudgetApp = () => {
 
   const saveData = useCallback(async () => {
     try {
-      await Promise.all([
-        window.storage.set('eg-budget-members', JSON.stringify(members)),
-        window.storage.set('eg-budget-categories', JSON.stringify(categories)),
-        window.storage.set('eg-budget-transactions', JSON.stringify(transactions)),
-        window.storage.set('eg-budget-debts', JSON.stringify(debts)),
-        window.storage.set('eg-budget-incomes', JSON.stringify(monthlyIncomes))
-      ]);
+      localStorage.setItem('eg-budget-members', JSON.stringify(members));
+      localStorage.setItem('eg-budget-categories', JSON.stringify(categories));
+      localStorage.setItem('eg-budget-transactions', JSON.stringify(transactions));
+      localStorage.setItem('eg-budget-debts', JSON.stringify(debts));
+      localStorage.setItem('eg-budget-incomes', JSON.stringify(monthlyIncomes));
     } catch (error) {
       console.error('Error saving data:', error);
     }
