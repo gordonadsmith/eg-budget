@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { PlusCircle, TrendingUp, TrendingDown, Wallet, CreditCard, Users, Calendar, Trash2, DollarSign, Target } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { PlusCircle, TrendingUp, TrendingDown, CreditCard, Users, Calendar, Trash2, DollarSign, Target } from 'lucide-react';
 
 // Utility function to generate unique IDs
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -49,13 +49,6 @@ const EGBudgetApp = () => {
     loadData();
   }, []);
 
-  // Save data whenever it changes
-  useEffect(() => {
-    if (!isLoading) {
-      saveData();
-    }
-  }, [members, categories, transactions, debts, monthlyIncomes]);
-
   const loadData = async () => {
     try {
       const [membersResult, categoriesResult, transactionsResult, debtsResult, incomesResult] = await Promise.all([
@@ -78,7 +71,7 @@ const EGBudgetApp = () => {
     }
   };
 
-  const saveData = async () => {
+  const saveData = useCallback(async () => {
     try {
       await Promise.all([
         window.storage.set('eg-budget-members', JSON.stringify(members)),
@@ -90,7 +83,14 @@ const EGBudgetApp = () => {
     } catch (error) {
       console.error('Error saving data:', error);
     }
-  };
+  }, [members, categories, transactions, debts, monthlyIncomes]);
+
+  // Save data whenever it changes
+  useEffect(() => {
+    if (!isLoading) {
+      saveData();
+    }
+  }, [isLoading, saveData]);
 
   // Member operations
   const addMember = () => {
@@ -403,24 +403,6 @@ const EGBudgetApp = () => {
         month: currentMonth,
         isDebtPayment: true
       }]);
-    }
-  };
-
-  const toggleMemberSelection = (memberId) => {
-    const currentIds = newTransaction.memberIds || [];
-    if (currentIds.includes(memberId)) {
-      setNewTransaction({
-        ...newTransaction,
-        memberIds: currentIds.filter(id => id !== memberId),
-        isJoint: currentIds.length - 1 > 1
-      });
-    } else {
-      const newIds = [...currentIds, memberId];
-      setNewTransaction({
-        ...newTransaction,
-        memberIds: newIds,
-        isJoint: newIds.length > 1
-      });
     }
   };
 
